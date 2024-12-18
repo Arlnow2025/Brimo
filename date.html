@@ -942,7 +942,7 @@ body{
 
         const messageStatus = document.querySelector('#status');
         if (response.ok) {
-            messageStatus.textContent = "Message sent successfully!";
+            messageStatus.textContent = "";
             e.target.reset();
             window.location.href = '/akun.html';
         } else {
